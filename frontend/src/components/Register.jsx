@@ -4,19 +4,19 @@ import axios from 'axios'
 import { useNavigate } from "react-router";
 
 
-function Login({backendUrl}) {
+function Register({backendUrl}) {
 
+    const [name, setName] = useState("");
     const [mail, setMail] = useState("");
     const [pass, setPass] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async () => {
         try{
-            const res = await axios.post(`${backendUrl}/auth/login`, {email: mail, password: pass});
-            localStorage.setItem('taskToken', res.data?.token);
-            console.log(res);
-            showToast("Login Succesful", "success");
-            navigate('/dashboard');
+            const res = await axios.post(`${backendUrl}/auth/register`, {name:name, email: mail, password: pass});
+            localStorage.setItem('taskToken', res.data.token);
+            showToast("User Registered Succesfully", "success");
+            navigate('/login');
         }catch(err){
             showToast(err.response?.data?.message || 'Invalid Credentials', 'error');
             console.error(err)
@@ -29,10 +29,23 @@ function Login({backendUrl}) {
       <div className="w-full max-w-md p-6">
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-8">
           <h2 className="text-center text-2xl font-semibold text-gray-800 dark:text-white mb-6">
-            Sign In
+            Sign Up
           </h2>
 
           <div className="space-y-5">
+            <div className="flex flex-col space-y-1">
+              <label
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name} onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
             {/* Email */}
             <div className="flex flex-col space-y-1">
               <label
@@ -70,18 +83,18 @@ function Login({backendUrl}) {
               onClick={handleSubmit}
               className="w-full py-2.5 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
             >
-              Sign In
+              Sign Up
             </button>
           </div>
 
           {/* Switch Auth */}
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
-            Don’t have an account?{" "}
+            Already Have an account?{" "}
             <a
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/login')}
               className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
             >
-              Sign up
+              Sign in
             </a>
           </p>
         </div>
@@ -90,5 +103,5 @@ function Login({backendUrl}) {
     );
 }
 
-export default Login;
+export default Register;
 
