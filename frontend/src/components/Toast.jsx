@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import ReactDOM from "react-dom"; // for createPortal
-import { createRoot } from "react-dom/client"; // for createRoot
+import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 
 
 const VARIANT_STYLES = {
@@ -13,7 +13,7 @@ const VARIANT_STYLES = {
 const Toast = ({ message, type = "info", duration = 3000, onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      onClose(); // let the caller unmount the root
+      onClose();
     }, duration);
 
     return () => clearTimeout(timer);

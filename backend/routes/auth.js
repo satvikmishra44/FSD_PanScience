@@ -50,4 +50,17 @@ router.post('/register', async(req, res) => {
     }
 })
 
+router.get('/me', async(req, res) => {
+    try{
+        const {id} = req.query;
+        const user = await User.findOne({_id: id}).populate({path: 'tasks', model: 'Task'}).select('-password -__v');
+        if(!user){
+            res.status(404).json({message: 'User Not Found'})
+        }
+        res.status(200).json(user);
+    } catch(err){
+        console.error(err);
+    }
+})
+
 module.exports = router

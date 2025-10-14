@@ -1,25 +1,129 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import TaskModal from "../components/modals/TaskModal";
+import axios from "axios";
+import { PieChart, Pie, Tooltip, Legend, Cell, ResponsiveContainer } from 'recharts';
+
 
 const Dashboard = ({ router, backendUrl }) => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const user = JSON.parse(localStorage.getItem("taskUser")) || { name: "Amit", role: "admin" };
+  const [userTasks, setUserTasks] = useState([]);
+  const [taskStats, setTaskStats] = useState({
+    total: 0,
+    pending: 0,
+    'in-progress': 0,
+    completed: 0,
+  });
+  const user = JSON.parse(localStorage.getItem("taskUser")) || { id: null, name: "Guest", role: "user" }; 
 
   const openTaskModal = () => setIsTaskModalOpen(true);
   const closeTaskModal = () => setIsTaskModalOpen(false);
 
+  const calculateTaskStats = (tasks) => {
+    const stats = {
+      total: tasks.length,
+      pending: 0,
+      'in-progress': 0,
+      completed: 0,
+    };
+
+    tasks.forEach(task => {
+      if (stats[task.status] !== undefined) {
+        stats[task.status]++;
+      }
+    });
+
+    setTaskStats(stats);
+  };
+
+  const fetchUserData = async () => {
+    if (!user.id) {
+        console.warn("User ID not found in localStorage. Cannot fetch tasks.");
+        return;
+    } 
+
+    try {
+        const response = await axios.get(`${backendUrl}/auth/me`, { params : {id: user.id}});
+
+        const userData = response.data;
+      const tasks = userData.tasks || []; 
+      setUserTasks(tasks); 
+      calculateTaskStats(tasks);
+
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchUserData();
+  }, [backendUrl, user.id]); 
+
   const stats = [
-    { id: "total-tasks", label: "Total Tasks", value: 0, bg: "bg-purple-100" },
-    { id: "pending-tasks", label: "Pending", value: 0, bg: "bg-yellow-100" },
-    { id: "progress-tasks", label: "In Progress", value: 0, bg: "bg-blue-100" },
-    { id: "completed-tasks", label: "Completed", value: 0, bg: "bg-green-100" },
+    { id: "total-tasks", label: "Total Tasks", value: taskStats.total, bg: "bg-purple-100" },
+    { id: "pending-tasks", label: "Pending", value: taskStats.pending, bg: "bg-yellow-100" },
+    { id: "progress-tasks", label: "In Progress", value: taskStats['in-progress'], bg: "bg-blue-100" }, // Bracket notation for key with hyphen
+    { id: "completed-tasks", label: "Completed", value: taskStats.completed, bg: "bg-green-100" },
   ];
 
-  const recentTasks = [
-    { id: 1, title: "Design Homepage", meta: "Due: Today | Assigned to: John" },
-    { id: 2, title: "Setup Backend", meta: "Due: Tomorrow | Assigned to: Alice" },
-  ];
+  const recentTasks = userTasks
+    .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
+    .slice(0, 5)
+    .map(task => ({
+      id: task._id,
+      title: task.title,
+      meta: `Status: ${task.status.charAt(0).toUpperCase() + task.status.slice(1)} | Due: ${new Date(task.dueDate).toLocaleDateString()}`
+    }));
+
+    const chartData = [
+    { name: 'Pending', value: taskStats.pending, color: '#fcd34d' },
+    { name: 'In Progress', value: taskStats['in-progress'], color: '#60a5fa' },
+    { name: 'Completed', value: taskStats.completed, color: '#34d399' },
+  ].filter(item => item.value > 0); 
+
+  const TaskPieChart = () => {
+    if (chartData.length === 0 || taskStats.total === 0) {
+      return (
+        <div className="text-center py-20 text-gray-500">
+          No tasks found to generate a chart.
+        </div>
+      );
+    }
+
+    return (
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={100}
+            paddingAngle={5}
+        >
+
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip 
+            contentStyle={{ backgroundColor: 'rgba(31, 41, 55, 0.9)', border: 'none', borderRadius: '4px', color: 'white' }}
+            formatter={(value, name) => [`${value} tasks`, name]}
+          />
+          <Legend 
+            wrapperStyle={{ paddingTop: '20px' }} 
+            iconType="circle" 
+            layout="horizontal" 
+            align="center" 
+            verticalAlign="bottom" 
+            className="text-xs"
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -38,7 +142,6 @@ const Dashboard = ({ router, backendUrl }) => {
 
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Quick Actions */}
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
             <h3 className="mb-4 text-lg font-medium">Quick Actions</h3>
             <div className="flex flex-col gap-4">
@@ -57,35 +160,36 @@ const Dashboard = ({ router, backendUrl }) => {
             </div>
           </div>
 
-          {/* Recent Tasks */}
           <div className="col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
             <h3 className="mb-4 text-lg font-medium">Recent Tasks</h3>
             <div className="flex flex-col gap-3">
-              {recentTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="flex justify-between items-center p-3 border border-gray-100 dark:border-gray-700 rounded-md cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                >
-                  <div className="flex-1">
-                    <div className="font-medium mb-1">{task.title}</div>
-                    <div className="text-xs text-gray-500">{task.meta}</div>
+              {recentTasks.length > 0 ? (
+                recentTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex justify-between items-center p-3 border border-gray-100 dark:border-gray-700 rounded-md cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    <div className="flex-1">
+                      <div className="font-medium mb-1">{task.title}</div>
+                      <div className="text-xs text-gray-500">{task.meta}</div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500">No recent tasks found.</div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Chart Section */}
         <div className="mt-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
           <h3 className="mb-4 text-lg font-medium">Task Status Overview</h3>
           <div className="h-72 relative">
-            <canvas id="taskChart" className="w-full h-full"></canvas>
+            <TaskPieChart />
           </div>
         </div>
       </div>
 
-      {/* Modal */}
       <TaskModal isOpen={isTaskModalOpen} onClose={closeTaskModal} backendUrl={backendUrl} />
     </div>
   );
