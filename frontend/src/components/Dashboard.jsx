@@ -1,64 +1,52 @@
+import { useState } from "react";
 import Navbar from "./Navbar";
+import TaskModal from "../components/modals/TaskModal";
 
-const stats = [
-  { id: "total-tasks", label: "Total Tasks", value: 0, bg: "bg-purple-100" },
-  { id: "pending-tasks", label: "Pending", value: 0, bg: "bg-yellow-100" },
-  { id: "progress-tasks", label: "In Progress", value: 0, bg: "bg-blue-100" },
-  { id: "completed-tasks", label: "Completed", value: 0, bg: "bg-green-100" },
-];
+const Dashboard = ({ router, backendUrl }) => {
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const user = JSON.parse(localStorage.getItem("taskUser")) || { name: "Amit", role: "admin" };
 
-const recentTasks = [
-  {
-    id: 1,
-    title: "Design Homepage",
-    meta: "Due: Today | Assigned to: John",
-  },
-  {
-    id: 2,
-    title: "Setup Backend",
-    meta: "Due: Tomorrow | Assigned to: Alice",
-  },
-];
+  const openTaskModal = () => setIsTaskModalOpen(true);
+  const closeTaskModal = () => setIsTaskModalOpen(false);
 
-const currentUser = { name: "Satvik", role: "admin" };
+  const stats = [
+    { id: "total-tasks", label: "Total Tasks", value: 0, bg: "bg-purple-100" },
+    { id: "pending-tasks", label: "Pending", value: 0, bg: "bg-yellow-100" },
+    { id: "progress-tasks", label: "In Progress", value: 0, bg: "bg-blue-100" },
+    { id: "completed-tasks", label: "Completed", value: 0, bg: "bg-green-100" },
+  ];
 
-const Dashboard = ({ showCreateTaskModal, router }) => {
+  const recentTasks = [
+    { id: 1, title: "Design Homepage", meta: "Due: Today | Assigned to: John" },
+    { id: 2, title: "Setup Backend", meta: "Due: Tomorrow | Assigned to: Alice" },
+  ];
+
   return (
-    // <div id="dashboard-page" className="page">
-    //   <div className="container mx-auto py-16 px-4">
-    //     <h2 className="mb-8 text-2xl font-semibold">Dashboard</h2>
-
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      {/* Navbar on top */}
-      <Navbar currentUser={currentUser} />
+      <Navbar currentUser={user} />
 
-      {/* Dashboard content */}
       <div className="pt-24 px-6">
         <h2 className="text-2xl font-semibold mb-6">Dashboard</h2>
-        {/* Stats Cards */}
+
+        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-32">
-          {stats.map((stat) => (
-            <div
-              key={stat.id}
-              className={`p-6 rounded-lg border border-gray-200 ${stat.bg}`}
-            >
-              <h3 className="text-sm font-medium text-gray-500 mb-2">
-                {stat.label}
-              </h3>
-              <div className="text-4xl font-bold text-gray-900">{stat.value}</div>
+          {stats.map((s) => (
+            <div key={s.id} className={`p-6 rounded-lg border border-gray-200 ${s.bg}`}>
+              <h3 className="text-sm font-medium text-gray-500 mb-2">{s.label}</h3>
+              <div className="text-4xl font-bold">{s.value}</div>
             </div>
           ))}
         </div>
 
-        {/* Quick Actions & Recent Tasks */}
+        {/* Actions & Tasks */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Quick Actions */}
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
             <h3 className="mb-4 text-lg font-medium">Quick Actions</h3>
             <div className="flex flex-col gap-4">
               <button
+                onClick={openTaskModal}
                 className="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition"
-                onClick={showCreateTaskModal}
               >
                 Create New Task
               </button>
@@ -82,9 +70,7 @@ const Dashboard = ({ showCreateTaskModal, router }) => {
                 >
                   <div className="flex-1">
                     <div className="font-medium mb-1">{task.title}</div>
-                    <div className="flex gap-2 items-center text-xs text-gray-500">
-                      {task.meta}
-                    </div>
+                    <div className="text-xs text-gray-500">{task.meta}</div>
                   </div>
                 </div>
               ))}
@@ -100,8 +86,10 @@ const Dashboard = ({ showCreateTaskModal, router }) => {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <TaskModal isOpen={isTaskModalOpen} onClose={closeTaskModal} backendUrl={backendUrl} />
     </div>
-    
   );
 };
 

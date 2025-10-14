@@ -29,7 +29,7 @@ const Navbar = ({ currentUser }) => {
         <div className="flex items-center gap-6">
           <h1
             onClick={() => navigate("/dashboard")}
-            className="text-xl font-semibold cursor-pointer"
+            className="text-xl font-semibold cursor-pointer hidden md:block"
           >
             TaskManager
           </h1>
@@ -66,23 +66,17 @@ const Navbar = ({ currentUser }) => {
 
         {/* Right Section */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={toggleTheme}
-            className="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          >
-            🌓
-          </button>
 
-          <div className="flex items-center gap-2">
-            <span className="font-medium">{currentUser?.name || "User"}</span>
-            <span className="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-              {currentUser?.role || "Member"}
+          <div className="items-center gap-2 hidden md:block">
+            <span className="text-lg mr-2 font-medium">{currentUser?.name || "User"}</span>
+            <span className="text-lg px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              {currentUser?.role || "User"}
             </span>
           </div>
 
           <button
             onClick={() => navigate('/logout')}
-            className="px-3 py-1 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="px-3 py-1 rounded-md border border-red-300 dark:border-red-600 bg-red-400 text-white dark:hover:bg-red-800 transition cursor-pointer"
           >
             Logout
           </button>

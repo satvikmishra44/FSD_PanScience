@@ -14,6 +14,7 @@ function Login({backendUrl}) {
         try{
             const res = await axios.post(`${backendUrl}/auth/login`, {email: mail, password: pass});
             localStorage.setItem('taskToken', res.data?.token);
+            localStorage.setItem('taskUser', JSON.stringify(res.data));
             console.log(res);
             showToast("Login Succesful", "success");
             navigate('/dashboard');

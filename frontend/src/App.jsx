@@ -16,8 +16,8 @@ function App() {
     <Routes>
       <Route path='*' element={<Landing />} />
       <Route path='/login' element={<Login backendUrl={backendUrl}/>} />
-      <Route path='/register' element={<ProtectedRoute><Register backendUrl={backendUrl}/> </ProtectedRoute>} />
-      <Route path='/dashboard' element={<ProtectedRoute><Dashboard /> </ProtectedRoute>} />
+      <Route path='/register' element={<Register backendUrl={backendUrl}/>} />
+      <Route path='/dashboard' element={<ProtectedRoute><Dashboard backendUrl={backendUrl} /> </ProtectedRoute>} />
       <Route path='/logout' element={<ProtectedRoute><Logout /></ProtectedRoute>} />
     </Routes>
   )
