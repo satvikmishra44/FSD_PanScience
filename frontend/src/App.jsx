@@ -1,9 +1,12 @@
 import './App.css'
+import Landing from './components/Landing'
+
 
 function App() {
   return (
-    <div className='text-red-500'>
-      Hello
+    <div>
+      <Landing />
+      
     </div>
   )
 }
