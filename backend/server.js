@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
+const multer = require('multer')
+const path = require('path')
 
 const app = express();
 const PORT = process.env.PORT || 3000
@@ -13,6 +15,27 @@ app.use(express.json());
 // Connecting To Local DB
 const MONGO_URI = 'mongodb://localhost:27017/myapp'
 mongoose.connect(MONGO_URI).then(() => console.log("Connected To Database")).catch((err) => console.error("Error: ", err))
+
+// Handling Directory Creation For Multer PDF
+const UPLOAD_DIR = path.join(__dirname, 'uploads/attachments');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        require('fs').mkdirSync(UPLOAD_DIR, {recursive: true});
+        cb(null, UPLOAD_DIR);
+    }, filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname.replace(/\s/g, '-')}`);
+    }
+})
+
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if(file.mimetype !== 'application/pdf'){
+            return cb(new Error('Only PDFs Can Be Uploaded'), false);
+        }
+        cb(null, true);
+    }
+});
 
 // Auth Route
 const authRoutes = require('./routes/auth');

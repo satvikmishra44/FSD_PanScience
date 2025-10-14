@@ -34,7 +34,6 @@ function Login({backendUrl}) {
           </h2>
 
           <div className="space-y-5">
-            {/* Email */}
             <div className="flex flex-col space-y-1">
               <label
                 className="text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -49,7 +48,6 @@ function Login({backendUrl}) {
               />
             </div>
 
-            {/* Password */}
             <div className="flex flex-col space-y-1">
               <label
                 htmlFor="login-password"
@@ -65,9 +63,7 @@ function Login({backendUrl}) {
               />
             </div>
 
-            {/* Submit Button */}
             <button
-              type="submit"
               onClick={handleSubmit}
               className="w-full py-2.5 rounded-md bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
             >
@@ -75,7 +71,6 @@ function Login({backendUrl}) {
             </button>
           </div>
 
-          {/* Switch Auth */}
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
             Don’t have an account?{" "}
             <a

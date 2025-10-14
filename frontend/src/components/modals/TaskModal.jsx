@@ -1,28 +1,24 @@
 import axios from 'axios'
 import { useState, useEffect } from 'react';
-import { showToast } from '../Toast'; // Assuming you have a Toast component
+import { showToast } from '../Toast';
 
 const TaskModal = ({ isOpen, onClose, backendUrl }) => {
     if (!isOpen) return null;
 
-    // --- State Initialization ---
     const [users, setUsers] = useState([]);
     const [files, setFiles] = useState([]);
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
     const [priority, setPriority] = useState("Low");
     const [status, setStatus] = useState("Pending");
-    const [dueDate, setDueDate] = useState(""); // <-- New State
-    const [assignedTo, setAssignedTo] = useState(""); // <-- New State
-    const [isLoading, setIsLoading] = useState(false); // <-- Loading state for button
-
-    // --- Utility & Handlers ---
+    const [dueDate, setDueDate] = useState("");
+    const [assignedTo, setAssignedTo] = useState(""); 
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleFileChange = (e) => {
         const selectedFiles = Array.from(e.target.files);
         const maxFiles = 3;
 
-        // Validation 1: Max file limit
         if (selectedFiles.length > maxFiles) {
             alert(`You can only upload a maximum of ${maxFiles} files.`);
             e.target.value = null;
@@ -30,7 +26,6 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
             return;
         }
 
-        // Validation 2: At least 1 file required (for submission logic)
         if (selectedFiles.length === 0) {
             setFiles([]);
             return;
@@ -44,7 +39,7 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
             const res = await axios.get(`${backendUrl}/admin/users`);
             setUsers(res.data)
             if (res.data.length > 0) {
-                setAssignedTo(res.data[0]._id); // Set default assignment to the first user
+                setAssignedTo(res.data[0]._id);
             }
         } catch (err) {
             console.error("Error fetching users:", err);
@@ -57,9 +52,8 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
         }
     }, [isOpen])
 
-    // --- Task Submission Function (Point 4) ---
     const handleSubmit = async () => {
-        // Validation Check (Point 4 requirement)
+
         if (!title || !desc || !dueDate || !assignedTo) {
             showToast("Please fill in all task details.", 'error');
             return;
@@ -74,12 +68,11 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', desc);
-        formData.append('priority', priority.toLowerCase()); // Match schema enum: 'low', 'medium', 'high'
-        formData.append('status', status.toLowerCase().replace(' ', '-')); // Match schema enum: 'pending', 'in-progress', 'completed'
+        formData.append('priority', priority.toLowerCase());
+        formData.append('status', status.toLowerCase().replace(' ', '-'));
         formData.append('dueDate', dueDate);
         formData.append('assignedTo', assignedTo);
         
-        // Append all files
         files.forEach(file => {
             formData.append('attachments', file);
         });
@@ -92,8 +85,7 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
             });
 
             showToast("Task created and assigned successfully!", 'success');
-            onClose(); // Close modal on success
-            // Optional: Reset form states here
+            onClose(); 
         } catch (err) {
             console.error(err);
             showToast(err.response?.data?.message || "Failed to create task.", 'error');
@@ -101,7 +93,6 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
             setIsLoading(false);
         }
     };
-    // ----------------------------------------------------
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000]">
@@ -121,37 +112,34 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
 
                 {/* Body */}
                 <div className="p-5 space-y-4">
-                    {/* Title Input */}
                     <div>
                         <label className="block font-medium mb-1">Title</label>
                         <input
                             type="text"
                             value={title} 
-                            onChange={(e) => setTitle(e.target.value)} // <-- CHANGE 1: Bind state
+                            onChange={(e) => setTitle(e.target.value)}
                             className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 bg-white dark:bg-gray-900"
                             placeholder="Enter task title"
                         />
                     </div>
 
-                    {/* Description Input */}
                     <div>
                         <label className="block font-medium mb-1">Description</label>
                         <textarea
                             rows="3"
                             value={desc}
-                            onChange={(e) => setDesc(e.target.value)} // <-- CHANGE 1: Bind state
+                            onChange={(e) => setDesc(e.target.value)}
                             className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 bg-white dark:bg-gray-900"
                             placeholder="Enter description"
                         ></textarea>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        {/* Priority Select */}
                         <div>
                             <label className="block font-medium mb-1">Priority</label>
                             <select 
                                 value={priority} 
-                                onChange={(e) => setPriority(e.target.value)} // <-- CHANGE 1: Bind state
+                                onChange={(e) => setPriority(e.target.value)}
                                 className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 bg-white dark:bg-gray-900"
                             >
                                 <option>Low</option>
@@ -160,12 +148,11 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
                                 <option>Urgent</option>
                             </select>
                         </div>
-                        {/* Status Select */}
                         <div>
                             <label className="block font-medium mb-1">Status</label>
                             <select 
                                 value={status}
-                                onChange={(e) => setStatus(e.target.value)} // <-- CHANGE 1: Bind state
+                                onChange={(e) => setStatus(e.target.value)}
                                 className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 bg-white dark:bg-gray-900"
                             >
                                 <option>Pending</option>
@@ -177,22 +164,21 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        {/* Due Date Input */}
                         <div>
                             <label className="block font-medium mb-1">Due Date</label>
                             <input
                                 type="date"
                                 value={dueDate}
-                                onChange={(e) => setDueDate(e.target.value)} // <-- CHANGE 1: Bind state
+                                onChange={(e) => setDueDate(e.target.value)}
                                 className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 bg-white dark:bg-gray-900"
                             />
                         </div>
-                        {/* Assign To Select */}
+
                         <div>
                             <label className="block font-medium mb-1">Assign To</label>
                             <select 
                                 value={assignedTo}
-                                onChange={(e) => setAssignedTo(e.target.value)} // <-- CHANGE 1: Bind state
+                                onChange={(e) => setAssignedTo(e.target.value)}
                                 className="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 bg-white dark:bg-gray-900"
                                 disabled={users.length === 0} 
                             >
@@ -210,8 +196,6 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
                             </select>
                         </div>
                     </div>
-
-                    {/* Attachments Input */}
                     <div>
                         <label className="block font-medium mb-1">
                             Attachments (PDF only, max 3)
@@ -229,7 +213,6 @@ const TaskModal = ({ isOpen, onClose, backendUrl }) => {
                     </div>
                 </div>
 
-                {/* Footer */}
                 <div className="flex justify-end gap-3 p-5 border-t border-gray-300 dark:border-gray-700">
                     <button
                         onClick={onClose}
