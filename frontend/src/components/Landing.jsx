@@ -2,7 +2,7 @@ import Orb from "./backgrounds/Orb";
 import { useNavigate } from "react-router-dom";
 
 function Landing() {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     return (
         <div className="w-screen h-screen bg-black overflow-hidden relative">
@@ -27,9 +27,9 @@ function Landing() {
 
                 <button
                     className="mt-8 cursor-pointer rounded-lg border border-zinc-600 bg-zinc-950 px-5 py-2 text-sm pointer-events-auto sm:text-base md:text-lg font-medium text-slate-200 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-                    // onClick={() => navigate('/docs')}
+                    onClick={() => navigate('/login')}
                 >
-                    <span className="text-slate-300/85">& Harness AI</span>
+                    Let's Get Started
                 </button>
             </div>
         </div>
