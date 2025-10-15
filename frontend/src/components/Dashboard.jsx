@@ -160,7 +160,6 @@ const Dashboard = ({ router, backendUrl }) => {
       <h2 className="text-2xl font-semibold mb-6">Dashboard</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-32">
         {stats.map((s) => (
-          // 🎯 CHANGE: Added cursor-pointer and onClick handler
           <div 
             key={s.id} 
             className={`p-6 rounded-lg border border-gray-200 ${s.bg} cursor-pointer hover:shadow-lg transition duration-150`}
@@ -207,7 +206,7 @@ const Dashboard = ({ router, backendUrl }) => {
                 >
                   <div className="flex-1">
                     <div className="font-medium mb-1">{task.title}</div>
-                    <div className="text-xs text-gray-500">{/* task.meta was removed as it's not in the map function */}</div>
+                    <div className="text-xs text-gray-500"></div>
                   </div>
                 </div>
               ))

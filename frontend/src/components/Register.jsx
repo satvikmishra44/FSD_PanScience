@@ -77,7 +77,6 @@ function Register({backendUrl}) {
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               onClick={handleSubmit}
@@ -87,7 +86,6 @@ function Register({backendUrl}) {
             </button>
           </div>
 
-          {/* Switch Auth */}
           <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
             Already Have an account?{" "}
             <a

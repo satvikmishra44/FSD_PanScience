@@ -9,10 +9,12 @@ import AllTask from './components/Alltask'
 import UserTasks from './components/UserTasks'
 import { useLocation } from 'react-router-dom';
 import UserList from './components/UserLists'
+import AdminProtected from './AdminProtected'
 
 
 const Logout = () => {
   localStorage.removeItem("taskToken");
+  localStorage.removeItem("taskUser");
   window.location.reload();
 }
 
@@ -28,9 +30,9 @@ function App() {
       <Route path='/register' element={<Register backendUrl={backendUrl}/>} />
       <Route path='/dashboard' element={<ProtectedRoute><Dashboard backendUrl={backendUrl} /> </ProtectedRoute>} />
       <Route path='/logout' element={<ProtectedRoute><Logout /></ProtectedRoute>} />
-      <Route path='/tasks/admin' element={<ProtectedRoute><AllTask backendUrl={backendUrl}/></ProtectedRoute>} />
+      <Route path='/tasks/admin' element={<ProtectedRoute><AdminProtected><AllTask backendUrl={backendUrl}/></AdminProtected></ProtectedRoute>} />
       <Route path='/tasks' element={<ProtectedRoute><UserTasks key={location.key} backendUrl={backendUrl}/></ProtectedRoute>} />
-      <Route path='/users' element={<ProtectedRoute><UserList backendUrl={backendUrl}/></ProtectedRoute>} />
+      <Route path='/users' element={<ProtectedRoute><AdminProtected><UserList backendUrl={backendUrl}/></AdminProtected></ProtectedRoute>} />
     </Routes>
   )
 }

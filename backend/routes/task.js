@@ -70,14 +70,12 @@ router.post('/create', upload, async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const taskId = req.params.id;
-        // Populate assignedTo to get the user's name
         const task = await Task.findById(taskId).populate('assignedTo', 'name'); 
 
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
 
-        // Format the output to include the assigned user's name directly
         const taskDetails = {
             _id: task._id,
             title: task.title,

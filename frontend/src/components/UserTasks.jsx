@@ -41,33 +41,22 @@ const getSafeUser = () => {
 
 const UserTasks = ({ 
     backendUrl,
-    // Removed initialPriority, initialStatus, initialDueDate props as they are now read from router state
 }) => {
-    // 🎯 NEW HOOK USAGE 🎯
     const location = useLocation();
-    const passedState = location.state || {}; // State passed from Dashboard
+    const passedState = location.state || {};
 
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
-    // 🎯 CHANGE: Initialize filter status from router state 🎯
     const [filterPriority, setFilterPriority] = useState(passedState.initialPriority || 'All');
     const [filterStatus, setFilterStatus] = useState(passedState.initialStatus || 'All');
     const [filterDueDate, setFilterDueDate] = useState(passedState.initialDueDate || '');
-    
-    // Note: Due to React's lifecycle, on subsequent visits, filter states might 
-    // retain the previous value. If you want the filter to ONLY apply on the first 
-    // click and then be manually controllable, this initialization is correct.
-    // To ensure the filter resets on EVERY /tasks page load, we use the key in App.jsx.
-
-    // Modal States
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
 
     const user = getSafeUser();
 
-    // Use useCallback to memoize the fetch function
     const fetchTasks = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -78,10 +67,8 @@ const UserTasks = ({
         }
 
         try {
-            // Updated API call to fetch tasks associated with the user ID
             const res = await axios.get(`${backendUrl}/auth/tasks?id=${user.id}`);
             console.log(res.data);
-            // The response data is expected to be the array of tasks
             setTasks(res.data);
         } catch(err) {
             console.error("Error fetching user tasks:", err);
@@ -96,7 +83,6 @@ const UserTasks = ({
         fetchTasks();
     }, [fetchTasks]); 
 
-    // HANDLERS FOR TASK DETAIL MODAL
     const openDetailModal = (task) => {
         setSelectedTask(task);
         setIsDetailModalOpen(true);
@@ -106,25 +92,21 @@ const UserTasks = ({
         setSelectedTask(null);
         setIsDetailModalOpen(false);
         if (shouldRefresh) {
-            fetchTasks(); // Re-fetch tasks if the modal indicates a change (e.g., delete/update)
+            fetchTasks(); 
         }
     };
 
-    // --- Filtering Logic ---
     const filteredTasks = useMemo(() => {
         let currentTasks = Array.isArray(tasks) ? tasks : [];
 
-        // 1. Filter by Status
         if (filterStatus !== 'All') {
             currentTasks = currentTasks.filter(task => task.status === filterStatus);
         }
 
-        // 2. Filter by Priority
         if (filterPriority !== 'All') {
             currentTasks = currentTasks.filter(task => task.priority === filterPriority);
         }
 
-        // 3. Filter by Due Date
         if (filterDueDate) {
             const selectedDate = new Date(filterDueDate);
             currentTasks = currentTasks.filter(task => {

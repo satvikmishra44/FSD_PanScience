@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import UserModal from './modals/UserModal';
 import Navbar from './Navbar';
@@ -35,18 +35,17 @@ const UserList = ({ backendUrl }) => {
         fetchUsers();
     }, [fetchUsers]);
 
-    // --- Memoized and Filtered User List ---
     const filteredUsers = useMemo(() => {
         let currentUsers = users;
 
-        // 1. Role Filtering
+        // Role Filtering
         if (roleFilter !== 'all') {
             currentUsers = currentUsers.filter(user => 
                 user.role?.toLowerCase() === roleFilter
             );
         }
 
-        // 2. Search Filtering (by name or email)
+        // Search Filtering (by name or email)
         if (searchTerm) {
             const lowerCaseSearch = searchTerm.toLowerCase();
             currentUsers = currentUsers.filter(user => 

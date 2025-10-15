@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
 
-function ProtectedRoute({ children }) {
+function AdminProtected({ children }) {
     const token = JSON.parse(localStorage.getItem("taskUser")).role === 'admin';
-    return token ? children : <Navigate to="/login" />;
+    return token ? children : <Navigate to="/logout" />;
 }
-export default ProtectedRoute;
+export default AdminProtected;

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo} from 'react';
 import axios from 'axios';
-import Navbar from './Navbar'; // Assuming Navbar is available
-import TaskDetailModal from '../components/modals/TaskDetailModal'; // Imported and used
+import Navbar from './Navbar';
+import TaskDetailModal from '../components/modals/TaskDetailModal';
 
-// Configuration for select inputs
 const priorityOptions = ['All', 'low', 'medium', 'high'];
 const statusOptions = ['All', 'pending', 'in-progress', 'completed'];
 
@@ -12,16 +11,13 @@ const AllTask = ({ backendUrl }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
-    // Filter States
     const [filterPriority, setFilterPriority] = useState('All');
     const [filterStatus, setFilterStatus] = useState('All');
     const [filterDueDate, setFilterDueDate] = useState('');
 
-    // === MODAL STATE ===
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
-    // ===================
-
+  
     const getSafeUser = () => {
         const defaultUser = { name: "Guest" };
         const userString = localStorage.getItem("taskUser");
@@ -54,9 +50,7 @@ const AllTask = ({ backendUrl }) => {
 
     useEffect(() => {
         fetchTasks();
-    }, []); // fetchTasks is now stable via useCallback
-
-    // === MODAL HANDLERS ===
+    }, []); 
     const openDetailModal = (task) => {
         setSelectedTask(task);
         setIsDetailModalOpen(true);
@@ -66,44 +60,40 @@ const AllTask = ({ backendUrl }) => {
         setSelectedTask(null);
         setIsDetailModalOpen(false);
         if (shouldRefresh) {
-            fetchTasks(); // Re-fetch tasks if the modal indicates a change (e.g., delete/update)
+            fetchTasks(); 
         }
-    };
-    // =====================
+    }
 
-    // --- Filtering Logic (No change needed) ---
     const filteredTasks = useMemo(() => {
         let currentTasks = Array.isArray(tasks) ? tasks : [];
 
-        // 1. Filter by Status
+        
         if (filterStatus !== 'All') {
             currentTasks = currentTasks.filter(task => task.status === filterStatus);
         }
 
-        // 2. Filter by Priority
+        
         if (filterPriority !== 'All') {
             currentTasks = currentTasks.filter(task => task.priority === filterPriority);
         }
 
-        // 3. Filter by Due Date (only show tasks due on or before the selected date)
+        
         if (filterDueDate) {
             const selectedDate = new Date(filterDueDate);
-            // Convert to a comparable format, ignoring time component for consistency
+            
             currentTasks = currentTasks.filter(task => {
                 const taskDueDate = new Date(task.dueDate);
-                // Set the time part to midnight for accurate day comparison
+                
                 taskDueDate.setHours(0, 0, 0, 0); 
                 selectedDate.setHours(0, 0, 0, 0);
                 return taskDueDate <= selectedDate;
             });
         }
         
-        // Sort for better view (e.g., by Due Date ascending)
         return currentTasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
     }, [tasks, filterStatus, filterPriority, filterDueDate]);
     
-    // --- Render Helpers (No change needed) ---
     const getStatusClasses = (status) => {
         switch (status) {
             case 'completed': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
@@ -129,7 +119,6 @@ const AllTask = ({ backendUrl }) => {
             <div className="pt-24 px-6 max-w-7xl mx-auto">
                 <h2 className="text-3xl font-bold mb-8">All Tasks</h2>
 
-                {/* --- Filters Section (Code omitted for brevity) --- */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8 border border-gray-200 dark:border-gray-700">
                     <h4 className="text-lg font-medium mb-4">Filter Tasks</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -180,7 +169,7 @@ const AllTask = ({ backendUrl }) => {
                 </div>
 
 
-                {/* --- Task List --- */}
+                {/* Task List  */}
                 {loading && (
                     <div className="text-center py-10">Loading tasks...</div>
                 )}
@@ -224,8 +213,7 @@ const AllTask = ({ backendUrl }) => {
                                         </span>
                                     </div>
                                     <span className="text-gray-500 dark:text-gray-400">
-                                        {/* You may need to fetch assigned user details separately if 'assignedTo' is just an ID */}
-                                        Assigned: {task.assignedTo.name || 'N/A'} 
+                                        Assigned: {task.assignedTo.name || 'This User'} 
                                     </span>
                                 </div>
                             </div>
@@ -235,18 +223,15 @@ const AllTask = ({ backendUrl }) => {
 
             </div>
             
-            {/* --- Task Detail Modal (NEW) --- */}
             {selectedTask && (
                 <TaskDetailModal
                     isOpen={isDetailModalOpen}
-                    onClose={closeDetailModal} // Pass the handler
+                    onClose={closeDetailModal} 
                     task={selectedTask}
                     backendUrl={backendUrl}
-                    // You might need an onUpdate or onDelete prop here 
-                    // to tell the modal what to do after an operation.
                 />
             )}
-            {/* --------------------------------- */}
+           
         </div>
     );
 };

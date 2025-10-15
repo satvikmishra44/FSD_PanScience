@@ -1,5 +1,3 @@
-// // // Integrate This With The App And The Second Modal, after that just add the feature for admin to create another admin, view all users and see their details by integrating UserModal, hide the create new task button for normal user, add a route which would automatically make admin@email.com admin upon registration, test the PDF watching functionality when the user will open up a task, also add a route to see all tasks.
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 

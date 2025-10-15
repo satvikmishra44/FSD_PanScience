@@ -54,6 +54,7 @@ router.post('/register', async(req, res) => {
     }
 })
 
+// Getting Self Details
 router.get('/me', async(req, res) => {
     try{
         const {id} = req.query;
@@ -67,20 +68,19 @@ router.get('/me', async(req, res) => {
     }
 })
 
+// Get All Tasks Of User
 router.get('/tasks', async(req, res) => {
     try {
-        // Assuming user ID is sent via query or middleware after authentication
         const userId = req.query.id; 
         
         const user = await User.findById(userId)
-            .populate('tasks') // Crucial: populates the task IDs with the full Task document
-            .select('tasks name'); // Only send back the tasks and name
+            .populate('tasks') 
+            .select('tasks name');
             
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        // The user.tasks array now contains the full task objects
         res.json(user.tasks);
     } catch (err) {
         console.error(err);

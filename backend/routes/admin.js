@@ -31,15 +31,14 @@ router.get('/tasks', async(req, res) => {
     }
 })
 
-// GET route to fetch a single user, including the last 3 tasks
 router.get('/users/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
             .populate({
                 path: 'tasks',
-                options: { sort: { 'createdAt': -1 }, limit: 3 } // Assuming 'createdAt' exists on Task schema
+                options: { sort: { 'createdAt': -1 }, limit: 3 }
             })
-            .select('-password'); // Exclude password
+            .select('-password');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -53,10 +52,8 @@ router.get('/users/:id', async (req, res) => {
 });
 
 
-// PUT route to update a user (used for promotion)
 router.put('/users/:id', async (req, res) => {
     const { role } = req.body;
-    // You should add authentication to ensure only an admin can perform this action
     try {
         let user = await User.findById(req.params.id);
 
@@ -64,13 +61,11 @@ router.put('/users/:id', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        // Only allow role update for promotion ('user' to 'admin')
         if (role && role.toLowerCase() === 'admin' && user.role.toLowerCase() === 'user') {
             user.role = 'admin';
             await user.save();
             return res.status(200).json({ message: `${user.name} promoted to Admin` });
         } else if (role && role.toLowerCase() === 'user' && user.role.toLowerCase() === 'admin') {
-            // Admin can't be demoted to user (as per requirement)
             return res.status(403).json({ message: 'Admin cannot be demoted to User.' });
         } else {
              return res.status(400).json({ message: 'Invalid update operation.' });
@@ -82,9 +77,7 @@ router.put('/users/:id', async (req, res) => {
     }
 });
 
-// DELETE route to delete a user
 router.delete('/users/:id', async (req, res) => {
-    // You should add authentication to ensure only an admin can perform this action
     try {
         const user = await User.findByIdAndDelete(req.params.id);
 
