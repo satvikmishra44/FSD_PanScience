@@ -67,8 +67,6 @@ router.post('/create', upload, async (req, res) => {
     }
 });
 
-// 1. GET Task Details by ID
-// GET /api/tasks/:id
 router.get('/:id', async (req, res) => {
     try {
         const taskId = req.params.id;
@@ -98,8 +96,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// 2. UPDATE Task by ID
-// PUT /api/tasks/:id
 router.put('/:id', async (req, res) => {
     try {
         const taskId = req.params.id;
@@ -110,8 +106,6 @@ router.put('/:id', async (req, res) => {
         if (!updatedTask) {
             return res.status(404).json({ message: 'Task not found' });
         }
-
-        // You might want to re-populate 'assignedTo' if you need the name back immediately
         res.status(200).json({ message: 'Task updated successfully', task: updatedTask });
     } catch (error) {
         console.error("Error updating task:", error);
@@ -119,8 +113,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// 3. DELETE Task by ID
-// DELETE /api/tasks/:id
 router.delete('/:id', async (req, res) => {
     try {
         const taskId = req.params.id;
