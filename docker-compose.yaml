@@ -5,6 +5,10 @@ services:
     image: mongo:8.0
     container_name: panscience-mongodb
     restart: unless-stopped
+    command: >
+      mongod
+      --setParameter logComponentVerbosity='{storage: {verbosity: 0}}'
+      --quiet
     ports:
       - "27017:27017"
     volumes:

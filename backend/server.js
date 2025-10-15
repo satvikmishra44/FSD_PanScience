@@ -14,7 +14,7 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connecting To Local DB
-const MONGO_URI = 'mongodb://localhost:27017/myapp'
+const MONGO_URI = 'mongodb://mongodb:27017/myapp'
 mongoose.connect(MONGO_URI).then(() => console.log("Connected To Database")).catch((err) => console.error("Error: ", err))
 
 // Handling Directory Creation For Multer PDF
