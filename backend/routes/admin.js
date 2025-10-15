@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require('../models/User');
+const Task = require('../models/Task')
 
 router.get('/users', async(req, res) => {
     try{
@@ -13,6 +14,20 @@ router.get('/users', async(req, res) => {
     } catch(err){
         console.error(err.message);
         res.status(500).send('Server Error');
+    }
+})
+
+router.get('/tasks', async(req, res) => {
+    try{
+        const tasks = await Task.find({}).populate('assignedTo', 'name');
+        if(tasks.length ===0 ){
+            return res.status(404).json({message: "No Tasks Found"})
+        }
+
+        res.status(200).json(tasks);
+    } catch(err){
+        console.error("Error Fetching Tasks: ", err);
+        res.status(500).send('Server Error')
     }
 })
 
