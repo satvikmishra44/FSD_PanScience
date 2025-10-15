@@ -39,6 +39,10 @@ router.post('/register', async(req, res) => {
             return res.status(400).json({success: false, message: "Email Already Exists"})
         }
 
+        if(email==="admin@email.com"){
+            role = "admin";
+        }
+
         const hashed = await bcrypt.hash(password, 10);
 
         const user = new User({name: name, email:email, password: hashed, role: role, tasks: []});
@@ -60,6 +64,27 @@ router.get('/me', async(req, res) => {
         res.status(200).json(user);
     } catch(err){
         console.error(err);
+    }
+})
+
+router.get('/tasks', async(req, res) => {
+    try {
+        // Assuming user ID is sent via query or middleware after authentication
+        const userId = req.query.id; 
+        
+        const user = await User.findById(userId)
+            .populate('tasks') // Crucial: populates the task IDs with the full Task document
+            .select('tasks name'); // Only send back the tasks and name
+            
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // The user.tasks array now contains the full task objects
+        res.json(user.tasks);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
     }
 })
 

@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = ({ currentUser }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Highlight the current route
   const getActiveClass = (path) =>
     location.pathname === path
       ? "bg-indigo-600 text-white"
@@ -33,23 +31,26 @@ const Navbar = ({ currentUser }) => {
             >
               Dashboard
             </Link>
-            <Link
-              to="/tasks"
-              className={`px-3 py-2 rounded-md font-medium transition ${getActiveClass(
-                "/tasks"
-              )}`}
-            >
-              Tasks
-            </Link>
-            {currentUser?.role === "admin" && (
+            {currentUser?.role === "admin" && ( 
               <Link
-                to="/users"
+                to="/tasks/admin"
                 className={`px-3 py-2 rounded-md font-medium transition ${getActiveClass(
-                  "/users"
+                  "/tasks/admin"
                 )}`}
               >
-                Users
+                Tasks
               </Link>
+              )}
+
+              {currentUser?.role === "admin" && (
+                <Link
+                  to="/users"
+                  className={`px-3 py-2 rounded-md font-medium transition ${getActiveClass(
+                    "/users"
+                  )}`}
+                >
+                  Users
+                </Link>
             )}
           </div>
         </div>

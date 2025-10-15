@@ -137,7 +137,7 @@ const TaskDetailModal = ({ isOpen, onClose, task, backendUrl }) => {
     { key: "Priority", value: task.priority.charAt(0).toUpperCase() + task.priority.slice(1) },
     { key: "Status", value: task.status.charAt(0).toUpperCase() + task.status.slice(1) },
     { key: "Due Date", value: new Date(task.dueDate).toLocaleDateString() },
-    { key: "Assigned To", value: task.assignedTo.name || "Unassigned" },
+    { key: "Assigned To", value: task.assignedTo?.name || "This User" },
   ];
 
   return (
